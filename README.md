@@ -7,8 +7,9 @@
 # How to use
 
 #Authors
-Tran Tuan Kiet
-Nguyen Duc Thang
-Le Thanh Loc
+
+- Tran Tuan Kiet
+- Nguyen Duc Thang
+- Le Thanh Loc
 
 #References
