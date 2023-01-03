@@ -1,14 +1,14 @@
 #include <stdio.h>
+#include <stdint.h>
+
 /**
  * Working with files
  * File types:
  * - .pnm file with "P2" or "P3" header
  * - filter (plain text)
  */
-void readPnm_uint8_t(char * fileName, int &numChannels, int &width, int &height, uint8_t * &pixels);
-void writePnm_uint8_t(uint8_t * pixels, int numChannels, int width, int height, char * fileName);
-void readPnm_uchar3(char * fileName, int &width, int &height, uchar3 * &pixels);
-void writePnm_uchar3(uchar3 * pixels, int width, int height, char * fileName);
+void readPnm(char * fileName, int &width, int &height, uint8_t * &pixels);
+void writePnm(uint8_t * pixels, int width, int height, char * fileName);
 
 void readFilter(char * fileName, int &filterWidth, float * filter);
 

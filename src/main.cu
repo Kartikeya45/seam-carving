@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "library.h"
 
 #define CHECK(call)\
@@ -31,22 +32,17 @@ int main(int argc, char ** argv) {
 	
   // Read user's args
   dim3 blockSize(32, 32); // Default
-  int resize = argv[3];
+  int resize = atoi(argv[3]);
   if (argc == 5) {
 		blockSize.x = atoi(argv[4]);
 		blockSize.y = atoi(argv[5]);
 	}
 
-	// Read input image file
-  int numChannels, width, height;
+	// Read input image file 
+  int width, height;
   uint8_t * inPixels;
-	readPnm(argv[1], numChannels, width, height, inPixels);
+	readPnm(argv[1], width, height, inPixels);
 
-  if (numChannels != 3) {
-    printf("Number of channels is not 3, input image must be RGB!");
-		return EXIT_FAILURE; 
-  }
-	printf("Image size (width x height): %i x %i\n\n", width, height);
 
   // Convert RGB to Grayscale
   uint8_t * correctOutPixels= (uint8_t *)malloc(width * height);
@@ -58,19 +54,23 @@ int main(int argc, char ** argv) {
   float err = computeError(outPixels, correctOutPixels, width * height);
 	printf("Error after convert RGB to Grayscale: %f\n", err);
 
-  // Write the Grayscale image
-	writePnm_uint8_t(correctOutPixels, 1, width, height, concatStr(argv[2], "_host.pnm"));
-	writePnm_uint8_t(outPixels, 1, width, height, concatStr(argv[2], "_device.pnm"));
+  // Write the Grayscale images
+	writePnm(correctOutPixels, width, height, concatStr(argv[2], "_grayscale_host.pnm"));
+	writePnm(outPixels, width, height, concatStr(argv[2], "_grayscale_device.pnm"));
 
+  // Free memories
+  free(inPixels);
+  free(outPixels);
+  
+  //Read grayscale image
+  uint8_t * in_Pixels;
+  readPnm(concatStr(argv[2], "_grayscale_host.pnm"), width, height, in_Pixels);
   // Seam carving
 
 
 	// Write results to files
-	//writePnm(inPixels, width, height, concatStr(argv[2], "_host.pnm"));
+	writePnm(in_Pixels, width, height, concatStr(argv[2], "_resize_host.pnm"));
 // 	writePnm(hostOutPixels, width, height, concatStr(outFileNameBase, "_host.pnm"));
 // 	writePnm(deviceOutPixels, width, height, concatStr(outFileNameBase, "_device.pnm"));
     
-  // Free memories
-  free(inPixels);
-  free(outPixels);
 }

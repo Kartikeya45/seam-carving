@@ -1,5 +1,6 @@
 #include <stdio.h>
-//#include "../library.h"
+#include <stdint.h>
+
 #define CHECK(call)\
 {\
     const cudaError_t error = call;\
@@ -25,4 +26,19 @@ void printDeviceInfo()
     printf("GMEM: %lu bytes\n", devProv.totalGlobalMem);
     printf("****************************\n\n");
 
+}
+
+float computeError(uint8_t * a1, uint8_t * a2, int n) {
+	float err = 0;
+	for (int i = 0; i < n; i++)
+		err += abs((int)a1[i] - (int)a2[i]);
+	err /= n;
+	return err;
+}
+
+char * concatStr(const char * s1, const char * s2) {
+    char * result = (char *)malloc(strlen(s1) + strlen(s2) + 1);
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result;
 }
