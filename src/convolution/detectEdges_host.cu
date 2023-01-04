@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-void detectEdges_host(uint8_t * inPixels, int width, int height, 
-        float * filter, int filterWidth, uint8 * outPixels) {
+void detectEdges_host(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, uint8_t * outPixels) {
 	for (int outPixelsR = 0; outPixelsR < height; outPixelsR++) 	{
 			for (int outPixelsC = 0; outPixelsC < width; outPixelsC++) {
 				float outPixel = 0;
@@ -13,8 +12,8 @@ void detectEdges_host(uint8_t * inPixels, int width, int height,
 						int inPixelsC = outPixelsC - filterWidth/2 + filterC;
 						inPixelsR = min(max(0, inPixelsR), height - 1);
 						inPixelsC = min(max(0, inPixelsC), width - 1);
-						uchar3 inPixel = inPixels[inPixelsR*width + inPixelsC];
-						outPixel += filterVal * inPixel;
+
+						outPixel += filterVal * inPixels[inPixelsR*width + inPixelsC];
 					}
 				}
 				outPixels[outPixelsR*width + outPixelsC] = outPixel; 

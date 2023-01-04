@@ -54,7 +54,7 @@ int main(int argc, char ** argv) {
   float err = computeError(outPixels, correctOutPixels, width * height);
 	printf("Error after convert RGB to Grayscale: %f\n", err);
 
-  // Write the Grayscale images
+  // Write the Grayscale images 
 	writePnm(correctOutPixels, width, height, concatStr(argv[2], "_grayscale_host.pnm"));
 	writePnm(outPixels, width, height, concatStr(argv[2], "_grayscale_device.pnm"));
 
@@ -65,7 +65,14 @@ int main(int argc, char ** argv) {
   //Read grayscale image
   uint8_t * in_Pixels;
   readPnm(concatStr(argv[2], "_grayscale_host.pnm"), width, height, in_Pixels);
-  // Seam carving
+
+  //convolution
+
+  // Calculate the importance & add them together
+
+  // Calculate the importance from the end
+
+  // Find & Erase seam
 
 
 	// Write results to files

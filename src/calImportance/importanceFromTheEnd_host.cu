@@ -3,7 +3,7 @@
 
 /**
  * @param inPixels: we will compute on this input.
- * Hence, it's must be a cop.
+ * Hence, it's must be a copy.
  * The original one will be reused.
  */
 void importanceFromTheEnd(uint8_t * inPixels, int width, int height) {
@@ -11,11 +11,11 @@ void importanceFromTheEnd(uint8_t * inPixels, int width, int height) {
         for (int col = 0; col < width; col++) {
 
             // get 3 values belows & get min
-            uint8_t val1 = result.get((row + 1) * width + Math.max(0, col - 1));
-            uint8_t val2 = result.get((row + 1) * width + col);
-            uint8_t val3 = result.get((row + 1) * width + Math.min(width - 1, col + 1));
+            uint8_t val1 = inPixels.get((row + 1) * width + max(0, col - 1));
+            uint8_t val2 = inPixels.get((row + 1) * width + col);
+            uint8_t val3 = inPixels.get((row + 1) * width + min(width - 1, col + 1));
 
-            uint8_t min = Math.min(Math.min(val1, val2), val3);
+            uint8_t min = min(min(val1, val2), val3);
 
             // add to current number
             inPixels[row * width + col] += min;

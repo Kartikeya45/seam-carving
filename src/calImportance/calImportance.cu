@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include "../library.h"
 
 #define CHECK(call)\
 {\
@@ -17,42 +18,37 @@
  * @param useDevice = false (default)
  * @param blockSize=dim3(1) (default)
  */
-void callImportance(uint8_t *in1, uint8_t *in2, int nRows, int nCols, uint8_t *out, 
-          bool useDevice, dim3 blockSize) {
+void callImportance(uint8_t *in1, uint8_t *in2, int nRows, int nCols, uint8_t *out, bool useDevice, dim3 blockSize) {
 	GpuTimer timer;
 	timer.Start();
 	if (useDevice == false) {
-        		addMat_host(in1, in2, nRows, nCols,out);
+    addMatrix_host(in1, in2, nRows, nCols, out);
 	}
 	else { // Use device
-		// Allocate device memories
-        uint8_t * d_in1;
-        uint8_t * d_in2;
-        uint8_t * d_out;
-        size_t nBytes = nRows * nCols * sizeof(uint8_t);
-        CHECK(cudaMalloc(&d_in1, nBytes));
-        CHECK(cudaMalloc(&d_in2, nBytes));
-        CHECK(cudaMalloc(&d_out, nBytes));
+    // Allocate device memories
+    uint8_t * d_in1, * d_in2, * d_out;
+    size_t nBytes = nRows * nCols * sizeof(uint8_t);
+    CHECK(cudaMalloc(&d_in1, nBytes));
+    CHECK(cudaMalloc(&d_in2, nBytes));
+    CHECK(cudaMalloc(&d_out, nBytes));
 
-		// Copy data to device memories
-        CHECK(cudaMemcpy(d_in1, in1, nBytes, cudaMemcpyHostToDevice));
-        CHECK(cudaMemcpy(d_in2, in2, nBytes, cudaMemcpyHostToDevice));
+    // Copy data to device memories
+    CHECK(cudaMemcpy(d_in1, in1, nBytes, cudaMemcpyHostToDevice));
+    CHECK(cudaMemcpy(d_in2, in2, nBytes, cudaMemcpyHostToDevice));
 
-		// Set grid size and call kernel
-        dim3 gridSize((nCols - 1) / blockSize.x + 1, 
-                (nRows - 1) / blockSize.y + 1);
-        addMatKernel<<<gridSize, blockSize>>>(d_in1, d_in2, nRows, nCols, d_out);
+    // Set grid size and call kernel
+    dim3 gridSize((nCols - 1) / blockSize.x + 1, (nRows - 1) / blockSize.y + 1);
+    addMatrix_kernel<<<gridSize, blockSize>>>(d_in1, d_in2, nRows, nCols, d_out);
 
-		// Copy result from device memory
-        CHECK(cudaMemcpy(out, d_out, nBytes, cudaMemcpyDeviceToHost));
+    // Copy result from device memory
+    CHECK(cudaMemcpy(out, d_out, nBytes, cudaMemcpyDeviceToHost));
 
-		// Free device memories
-        CHECK(cudaFree(d_in1));
-        CHECK(cudaFree(d_in2));
-        CHECK(cudaFree(d_out));
+    // Free device memories
+    CHECK(cudaFree(d_in1));
+    CHECK(cudaFree(d_in2));
+    CHECK(cudaFree(d_out));
 	}
 	timer.Stop();
 	float time = timer.Elapsed();
-	printf("Processing time (%s): %f ms\n\n", 
-			useDevice == true? "use device" : "use host", time);
+	printf("Processing time (%s): %f ms\n\n", useDevice == true? "use device" : "use host", time);
 }

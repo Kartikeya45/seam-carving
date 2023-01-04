@@ -6,8 +6,8 @@
  * @return: float *  
  * read the first line to see how many lines we are going to read
  */
-float *readFilter(char * fileName, int &filterWidth) {
-	FILE * f = fopen(filename, "r");
+float * readFilter(char * fileName, int &filterWidth) {
+	FILE * f = fopen(fileName, "r");
 
 	if (f == NULL) {
 		printf("Cannot read fiilter %s\n", fileName);
@@ -18,7 +18,7 @@ float *readFilter(char * fileName, int &filterWidth) {
 	float * filter;
 	filter = (float *)malloc(filterWidth * filterWidth * sizeof(float));
 	int i = 0;
-	while(!feof(fp)) {
+	while(!feof(f)) {
 		fscanf(f,"%f",&filter[i]);
 		i++;
 	}
