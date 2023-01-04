@@ -1,3 +1,6 @@
+#ifndef HEADER_H
+#define HEADER_H
+
 #include <stdio.h>
 #include <stdint.h>
 __constant__ float dc_filter[9];
@@ -86,3 +89,4 @@ struct GpuTimer {
         return elapsed;
     }
 };
+#endif
