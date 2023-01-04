@@ -1,75 +1,35 @@
-__global__ void blurImgKernel1(uchar3 * inPixels, int width, int height, 
-        float * filter, int filterWidth, 
-        uchar3 * outPixels)
-{
-	// TODO
-	  int r = blockIdx.y * blockDim.y + threadIdx.y;
-    int c = blockIdx.x * blockDim.x + threadIdx.x;
+#include <stdio.h>
+#include <stdint.h>
 
-    if (r < height && c < width)
-    { 
-        float3 outPixel = make_float3(0, 0, 0);
-				for (int filterR = 0; filterR < filterWidth; filterR++)
-				{
-					for (int filterC = 0; filterC < filterWidth; filterC++)
-					{
-						float filterVal = filter[filterR*filterWidth + filterC];
-						int inPixelsR = r - filterWidth/2 + filterR;
-						int inPixelsC = c - filterWidth/2 + filterC;
-						inPixelsR = min(max(0, inPixelsR), height - 1);
-						inPixelsC = min(max(0, inPixelsC), width - 1);
-						uchar3 inPixel = inPixels[inPixelsR*width + inPixelsC];
-						outPixel.x += filterVal * inPixel.x;
-						outPixel.y += filterVal * inPixel.y;
-						outPixel.z += filterVal * inPixel.z;
-					}
-        }
-        outPixels[r*width+c].x = outPixel.x;
-        outPixels[r*width+c].y = outPixel.y;
-        outPixels[r*width+c].z = outPixel.z;
-
-    }    
+#define CHECK(call)\
+{\
+    const cudaError_t error = call;\
+    if (error != cudaSuccess)\
+    {\
+        fprintf(stderr, "Error: %s:%d, ", __FILE__, __LINE__);\
+        fprintf(stderr, "code: %d, reason: %s\n", error,\
+                cudaGetErrorString(error));\
+        exit(EXIT_FAILURE);\
+    }\
 }
 
-void blurImg(uchar3 * inPixels, int width, int height, float * filter, int filterWidth, 
-        uchar3 * outPixels,
-        bool useDevice=false, dim3 blockSize=dim3(1, 1))
-{
-	if (useDevice == false)
-	{
-		for (int outPixelsR = 0; outPixelsR < height; outPixelsR++)
-		{
-			for (int outPixelsC = 0; outPixelsC < width; outPixelsC++)
-			{
-				float3 outPixel = make_float3(0, 0, 0);
-				for (int filterR = 0; filterR < filterWidth; filterR++)
-				{
-					for (int filterC = 0; filterC < filterWidth; filterC++)
-					{
-						float filterVal = filter[filterR*filterWidth + filterC];
-						int inPixelsR = outPixelsR - filterWidth/2 + filterR;
-						int inPixelsC = outPixelsC - filterWidth/2 + filterC;
-						inPixelsR = min(max(0, inPixelsR), height - 1);
-						inPixelsC = min(max(0, inPixelsC), width - 1);
-						uchar3 inPixel = inPixels[inPixelsR*width + inPixelsC];
-						outPixel.x += filterVal * inPixel.x;
-						outPixel.y += filterVal * inPixel.y;
-						outPixel.z += filterVal * inPixel.z;
-					}
-				}
-				outPixels[outPixelsR*width + outPixelsC] = make_uchar3(outPixel.x, outPixel.y, outPixel.z); 
-			}
-		}
+/**
+ * @param useDevice = false (default)
+ * @param blockSize=dim3(1, 1) (default)
+ */
+void blurImg(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, 
+        uint8_t * outPixels, bool useDevice, dim3 blockSize) {
+	if (useDevice == false) 	{
+		detectEdges(inPixels, width, height, filter, filterWidth, outPixels);
 	}
-	else // Use device
-	{
+	else { // Use device
 		GpuTimer timer;
 		
 		printf("\nKernel %i, ", kernelType);
 		// Allocate device memories
-		uchar3 * d_inPixels, * d_outPixels;
+		uint8_t * d_inPixels, * d_outPixels;
 		float * d_filter;
-		size_t pixelsSize = width * height * sizeof(uchar3);
+		size_t pixelsSize = width * height * sizeof(uint8_t);
 		size_t filterSize = filterWidth * filterWidth * sizeof(float);
 		CHECK(cudaMalloc(&d_inPixels, pixelsSize));
 		CHECK(cudaMalloc(&d_outPixels, pixelsSize));
@@ -86,7 +46,7 @@ void blurImg(uchar3 * inPixels, int width, int height, float * filter, int filte
 		}
 		else
 		{
-			// TODO: copy data from "filter" (on host) to "dc_filter" (on CMEM of device)
+			// Copy data from "filter" (on host) to "dc_filter" (on CMEM of device)
       cudaMemcpyToSymbol(dc_filter,filter,filterSize);
 		}
 
@@ -97,7 +57,7 @@ void blurImg(uchar3 * inPixels, int width, int height, float * filter, int filte
 
 		timer.Start();
 			// TODO: call blurImgKernel1
-    blurImgKernel1<<<gridSize, blockSize>>>(d_inPixels, width, height, d_filter, filterWidth, d_outPixels);
+    detectEdges_device<<<gridSize, blockSize>>>(d_inPixels, width, height, d_filter, filterWidth, d_outPixels);
 
 		timer.Stop();
 		float time = timer.Elapsed();

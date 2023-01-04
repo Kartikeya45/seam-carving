@@ -17,18 +17,25 @@ void readFilter(char * fileName, int &filterWidth, float * filter);
  * convert RGB to Grayscale
  */
 void convertRgb2Gray(uint8_t * inPixels, int width, int height, uint8_t * outPixels, bool useDevice=false, dim3 blockSize=dim3(1));
-void convertRgb2Gray_host(uint8_t * inPixels, int width, int height, uint8_t * outPixels);//host
-__global__ void convertRgb2GrayKernel(uint8_t * inPixels, int width, int height, uint8_t * outPixels);//device
+void convertRgb2Gray_host(uint8_t * inPixels, int width, int height, uint8_t * outPixels);
+__global__ void convertRgb2Gray_device(uint8_t * inPixels, int width, int height, uint8_t * outPixels);
 
 /**
  * Convolution
- *
  */
-
+void blurImg(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, 
+        uint8_t * outPixels, bool useDevice=false, dim3 blockSize=dim3(1, 1));
+void detectEdges_host(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, uint8 * outPixels);
+__global__ void detectEdges_device(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, uint8 * outPixels);
 
 /**
  * Calculation the importance of pixels from the end
  */
+void callImportance(uint8_t *in1, uint8_t *in2, int nRows, int nCols, uint8_t *out, bool useDevice=false, dim3 blockSize=dim3(1));
+void addMat_host(uint8_t *in1, uint8_t *in2, int nRows, int nCols, uint8_t *out);
+__global__ void addMatKernel(uint8_t *in1, uint8_t *in2, int nRows, int nCols, uint8_t *out);
+
+
 void importanceFromTheEnd(uchar3 * inPixels, int width, int height);//unfinished
 
 /**

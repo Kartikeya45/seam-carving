@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-__global__ void convertRgb2GrayKernel(uint8_t * inPixels, int width, int height, uint8_t * outPixels) {
+__global__ void convertRgb2Gray_device(uint8_t * inPixels, int width, int height, uint8_t * outPixels) {
     int r = blockIdx.y * blockDim.y + threadIdx.y;
     int c = blockIdx.x * blockDim.x + threadIdx.x;
 

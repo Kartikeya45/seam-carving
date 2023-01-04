@@ -1,37 +1,35 @@
-__global__ void addMatKernel(int *in1, int *in2, int nRows, int nCols, int *out) {
-    int r = blockIdx.y * blockDim.y + threadIdx.y;
-    int c = blockIdx.x * blockDim.x + threadIdx.x;
+#include <stdio.h>
+#include <stdint.h>
 
-    if (r < nRows && c < nCols) { 
-        int i = r * nCols + c;
-        out[i] = in1[i] + in2[i];
-    }
+#define CHECK(call)\
+{\
+    const cudaError_t error = call;\
+    if (error != cudaSuccess)\
+    {\
+        fprintf(stderr, "Error: %s:%d, ", __FILE__, __LINE__);\
+        fprintf(stderr, "code: %d, reason: %s\n", error,\
+                cudaGetErrorString(error));\
+        exit(EXIT_FAILURE);\
+    }\
 }
 
-void addMat(int *in1, int *in2, int nRows, int nCols, int *out, 
-          bool useDevice=false, dim3 blockSize=dim3(1)) {
+/**
+ * @param useDevice = false (default)
+ * @param blockSize=dim3(1) (default)
+ */
+void callImportance(uint8_t *in1, uint8_t *in2, int nRows, int nCols, uint8_t *out, 
+          bool useDevice, dim3 blockSize) {
 	GpuTimer timer;
 	timer.Start();
 	if (useDevice == false) {
-        for (int r = 0; r < nRows; r++) {
-            for (int c = 0; c < nCols; c++) {
-                int i = r * nCols + c;
-                out[i] = in1[i] + in2[i];
-            }
-        }
+        		addMat_host(in1, in2, nRows, nCols,out);
 	}
-	else // Use device
-	{
-		cudaDeviceProp devProp;
-		cudaGetDeviceProperties(&devProp, 0);
-		printf("GPU name: %s\n", devProp.name);
-		printf("GPU compute capability: %d.%d\n", devProp.major, devProp.minor);
-
+	else { // Use device
 		// Allocate device memories
-        int * d_in1;
-        int * d_in2;
-        int * d_out;
-        size_t nBytes = nRows * nCols * sizeof(int);
+        uint8_t * d_in1;
+        uint8_t * d_in2;
+        uint8_t * d_out;
+        size_t nBytes = nRows * nCols * sizeof(uint8_t);
         CHECK(cudaMalloc(&d_in1, nBytes));
         CHECK(cudaMalloc(&d_in2, nBytes));
         CHECK(cudaMalloc(&d_out, nBytes));

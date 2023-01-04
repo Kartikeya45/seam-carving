@@ -3,9 +3,25 @@
 /**
  * @param fileName: ./host/filter/*
  * @param filterWidth should be 3 when using x-sobel or y-sobel
- * 
- * test this function by using each .txt files in ./host/filter/*
+ * @return: float *  
+ * read the first line to see how many lines we are going to read
  */
-void readFilter(char * fileName, int &filterWidth, float * filter) {
-    
+float *readFilter(char * fileName, int &filterWidth) {
+	FILE * f = fopen(filename, "r");
+
+	if (f == NULL) {
+		printf("Cannot read fiilter %s\n", fileName);
+		exit(EXIT_FAILURE);
+	}
+
+	fscanf(f, "%d", &filterWidth);
+	float * filter;
+	filter = (float *)malloc(filterWidth * filterWidth * sizeof(float));
+	int i = 0;
+	while(!feof(fp)) {
+		fscanf(f,"%f",&filter[i]);
+		i++;
+	}
+	fclose(f);
+	return filter;
 }

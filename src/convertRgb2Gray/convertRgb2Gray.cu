@@ -37,7 +37,7 @@ void convertRgb2Gray(uint8_t * inPixels, int width, int height, uint8_t * outPix
 
 		// Set grid size and call kernel
     dim3 gridSize((width - 1) / blockSize.x + 1, (height - 1) / blockSize.y + 1);
-    convertRgb2GrayKernel<<<gridSize, blockSize>>>(d_inPixels, width, height, d_outPixels);
+    convertRgb2Gray_device<<<gridSize, blockSize>>>(d_inPixels, width, height, d_outPixels);
 
     // Check kernel error
 		cudaError_t errSync  = cudaGetLastError();
