@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "../library.h"
-
+// #include "../library_var.h"
+__constant__ float dc_filter[9];
 
 #define CHECK(call)\
 {\
@@ -28,7 +29,7 @@ void convolution(uint8_t * inPixels, int width, int height, float * filter, int 
         uint8_t * outPixels, bool useDevice, dim3 blockSize, int kernelType) {
 
 	if (useDevice == false) {
-    detectEdges_host(inPixels, width, height, filter, filterWidth, outPixels);
+        detectEdges_host(inPixels, width, height, filter, filterWidth, outPixels);
 	}
 	else { // Use device
 		GpuTimer timer;
@@ -52,23 +53,23 @@ void convolution(uint8_t * inPixels, int width, int height, float * filter, int 
 			CHECK(cudaMemcpy(d_filter, filter, filterSize, cudaMemcpyHostToDevice));
 		} else {
 			// Copy data from "filter" (on host) to "dc_filter" (on CMEM of device)
-      cudaMemcpyToSymbol(dc_filter,filter,filterSize);
+            cudaMemcpyToSymbol(dc_filter,filter,filterSize);
 		}
 
 		// Call kernel
 		dim3 gridSize((width-1)/blockSize.x + 1, (height-1)/blockSize.y + 1);
 		printf("block size %ix%i, grid size %ix%i\n", blockSize.x, blockSize.y, gridSize.x, gridSize.y);
-    size_t share_size = (blockSize.x + filterWidth - 1) * (blockSize.y + filterWidth - 1) * sizeof(uint8_t);
+        size_t share_size = (blockSize.x + filterWidth - 1) * (blockSize.y + filterWidth - 1) * sizeof(uint8_t);
 
 		timer.Start();
 		if (kernelType == 1) {
-      detectEdges_kernel1<<<gridSize, blockSize>>>(d_inPixels, width, height, d_filter, filterWidth, d_outPixels);
+            detectEdges_kernel1<<<gridSize, blockSize>>>(d_inPixels, width, height, d_filter, filterWidth, d_outPixels);
 		} 
-    else if (kernelType == 2) {
-      detectEdges_kernel2<<<gridSize, blockSize, share_size>>>(d_inPixels, width, height, d_filter, filterWidth, d_outPixels);
+        else if (kernelType == 2) {
+            detectEdges_kernel2<<<gridSize, blockSize, share_size>>>(d_inPixels, width, height, d_filter, filterWidth, d_outPixels);
 		}
 		else {
-      detectEdges_kernel3<<<gridSize, blockSize, share_size>>>(d_inPixels, width, height, filterWidth, d_outPixels);
+            detectEdges_kernel3<<<gridSize, blockSize, share_size>>>(d_inPixels, width, height, filterWidth, d_outPixels);
 		}
 		timer.Stop();
 		float time = timer.Elapsed();

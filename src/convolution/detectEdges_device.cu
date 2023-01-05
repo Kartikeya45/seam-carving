@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "../library.h"
+#include "../library_var.h"
+
 
 __global__ void detectEdges_kernel1(uint8_t * inPixels, int width, int height, 
         float * filter, int filterWidth, uint8_t * outPixels) {

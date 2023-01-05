@@ -10,7 +10,7 @@ float * readFilter(char * fileName, int &filterWidth) {
 	FILE * f = fopen(fileName, "r");
 
 	if (f == NULL) {
-		printf("Cannot read fiilter %s\n", fileName);
+		printf("Cannot read filter %s\n", fileName);
 		exit(EXIT_FAILURE);
 	}
 

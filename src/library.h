@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-__constant__ float dc_filter[9];
-
+extern __constant__ float dc_filter[9];
 /**
  * Working with files
  * File types:
