@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "../library.h"
-// #include "../library_var.h"
+
 __constant__ float dc_filter[9];
 
 #define CHECK(call)\

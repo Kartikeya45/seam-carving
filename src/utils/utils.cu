@@ -36,6 +36,11 @@ float computeError(uint8_t * a1, uint8_t * a2, int n) {
 	return err;
 }
 
+void printError(char * msg, uint8_t * deviceResult, uint8_t * hostResult, int width, int height) {
+	float err = computeError(deviceResult, hostResult, width * height);
+	printf("%s: %f\n", msg, err);
+}
+
 char * concatStr(const char * s1, const char * s2) {
     char * result = (char *)malloc(strlen(s1) + strlen(s2) + 1);
     strcpy(result, s1);
