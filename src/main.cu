@@ -2,6 +2,12 @@
 #include <stdint.h>
 #include "library.h"
 
+
+int height, width, filterWidth;
+float * x_sobel, * y_sobel;
+dim3 blockSize(32, 32);
+
+
 #define CHECK(call)\
 {\
     const cudaError_t error = call;\
@@ -14,16 +20,14 @@
     }\
 }
 
-void step0_checkInput(int argc, char ** argv, dim3 &blockSize) {
+void step0_checkInput(int argc, char ** argv, uint8_t * rgbPic) {
+
     if (argc != 4 && argc != 6) {
 		printf("The number of arguments is invalid\n");
 		exit(EXIT_FAILURE);
 	}
 
-    int width, height;
-    uint8_t * inPixels;
-
-    readPnm(argv[1], width, height, inPixels);
+    readPnm(argv[1], width, height, rgbPic);
 	
     // Check if we can resize the width to be smaller or not
     int newWidthSize = atoi(argv[3]);
@@ -38,115 +42,78 @@ void step0_checkInput(int argc, char ** argv, dim3 &blockSize) {
 		blockSize.y = atoi(argv[5]);
 	}
 
+    // Check filter
+    int _filterWidth;
+    x_sobel = readFilter("../filter/x-sobel.txt", filterWidth);
+    y_sobel = readFilter("../filter/y-sobel.txt", _filterWidth);
+    
+    if (filterWidth != _filterWidth || filterWidth % 2 == 0) {
+        printf("Filters width is not equal or not even!\n");
+		exit(EXIT_FAILURE);
+    }
+
     // Check if GPU is still working
     printDeviceInfo();
 }
 
 
-void step1_convertRgb2Gray(char * inFileName, char * outFileName, dim3 blockSize, int version) {
-    int width, height;
-    uint8_t * inPixels;
+uint8_t * grayPixels step1_convertRgb2Gray(uint8_t * rgbPic, char * outFileName, int version) {
 
-    readPnm(inFileName, width, height, inPixels);
+    uint8_t * out = (uint8_t *)malloc(width * height);
 
-    // host
-    uint8_t * outPixels_host = (uint8_t *)malloc(width * height);
-	convertRgb2Gray(inPixels, width, height, outPixels_host);
-
-    // device (version 1)
-    uint8_t * outPixels = (uint8_t *)malloc(width * height);
-    convertRgb2Gray(inPixels, width, height, outPixels, true, blockSize);
-    
-    // Error
-    printError("RGB TO GRAYSCALE - Error ", outPixels, outPixels_host, width, height);
+    if (version == 0) {
+        convertRgb2Gray(rgbPic, width, height, out);
+    } else {
+        convertRgb2Gray(rgbPic, width, height, out, true, blockSize);
+    }
+    //printError("RGB TO GRAYSCALE - Error ", outPixels_device, outPixels_host, width, height);
 
     // Write the Grayscale images 
-	writePnm(outPixels_host, width, height, outFileName);
-	writePnm(outPixels, width, height, outFileName);
+    if (version == 0) {
+        writePnm(out, width, height, outFileName);
+    }
 
-    // Free memory
-    free(inPixels);
-    free(outPixels_host);
-    free(outPixels);
+    return out;
 }
 
 
-void step2_detectEdges(char * inFileName, char * outFileName = "", dim3 blockSize, int version, char * filterName) {
-    // Read x-sobel & y-sobel
-    int filterWidth;
-    float * filter;
+uint8_t * step2_detectEdges(uint8_t * grayPic, float * filter, int version) {
 
-    if (strcmp(filterName, "x") == 0)
-        filter = readFilter("../filter/x-sobel.txt", filterWidth);
-    else if (strcmp(filterName, "y") == 0) 
-        filter = readFilter("../filter/y-sobel.txt", filterWidth);
-    
-    // if x-sobel & y-sobel doesn't have the same width or their width is even:
-    if (filterWidth % 2 == 0) {
-        printf("Filter's width is not even!\n");
-		exit(EXIT_FAILURE);
+    uint8_t * out = (uint8_t *)malloc(width * height);
+
+    if (version == 0) {
+        convolution(grayPic, width, height, filter, filterWidth, out);
+    } else {
+        convolution(grayPic, width, height, filter, filterWidth, out, true, blocksize, version);
+        writePnm(out, width, height, )
     }
-
-    //Read grayscale image
-    int width, height;
-    uint8_t * inPixels;
-    readPnm(inFileName, width, height, inPixels);
-
-    // apply using host
-    uint8_t * outPixels_host = (uint8_t *)malloc(width * height * sizeof(uint8_t)); 
-	convolution(inPixels, width, height, filter, filterWidth, outPixels_host);
+    return out;
     
-    uint8_t * outPixels_device = (uint8_t *)malloc(width * height * sizeof(uint8_t));
-
-    convolution(inPixels, width, height, filter, filterWidth, outPixels_device, true, blockSize, version);
-    printf("Version %d", version);
-    printError("CONVOLUTION - Error", outPixels_device, outPixels_host, width, height);
-    
-    // write file
-    if (strcmp(outFileName, "") != 0)
-        //writePnm(outPixels_host, width, height, outFileName); // write using host - INCORRECT
-        writePnm(outPixels_device, width, height, outFileName); // write using device - CORRECT
-
-    // free memory
-    free(inPixels);
-    free(outPixels_host);
-    free(outPixels_device);
+    // printf("Version %d", version);
+    // printError("CONVOLUTION - Error", outPixels_device, outPixels_host, width, height);
 }
 
 /**
- * @param inFileName: user input (= argv[2])
+ * 
  */
-void step3_calculateImportance(char * inFileName, dim3 blockSize, int version) {
+ uint8_t * step3_calculateImportance(uint8_t * xEdge, uint8_t * yEdge, int version) {
+     
+    uint8_t * out = (uint8_t *)malloc(width * height);
 
-    int width, height, _width, _height;
-    uint8_t * in1, * in2;
-
-    // Read detected edges file
-    readPnm(concatStr(inFileName, "_x_edge.pnm"), width, height, in1);
-    readPnm(concatStr(inFileName, "_y_edge.pnm"), _width, _height, in2);
-
-    // Check if inFileName is still intact or not
-    if (width != _width || height != _height) {
-        printf("Your edge detection files may be wrong!\n");
-		exit(EXIT_FAILURE);
+    if (version == 0) {
+        calImportance(xEdge, yEdge, height, width, out);
+    }
+    else {
+        calImportance(xEdge, yEdge, height, width, out, true, blockSize);
     }
 
-    // Host
-    uint8_t * outPixels_host = (uint8_t *)malloc(width * height);
-    calImportance(in1, in2, height, width, outPixels_host);
-
-    // Device
-    uint8_t * outPixels_device = (uint8_t *)malloc(width * height);
-    calImportance(in1, in2, height, width, outPixels_host, true, blockSize);
-
-    printError("ADD MATRIX - Error", outPixels_device, outPixels_host, width, height);
-
-    // Free memory
-    free(in1);
-    free(in2);
-
-    
+    return out;
 }
+
+
+// void resizing(char * fileName, char * outFileName = "", dim3 blockSize, int version) {
+
+// }
 
 
 /**
@@ -159,29 +126,30 @@ void step3_calculateImportance(char * inFileName, dim3 blockSize, int version) {
  */
 int main(int argc, char ** argv) {
 
-    // STEP 0
-    dim3 blockSize(32, 32);
-    step0_checkInput(argc, argv, blockSize);
-
-    // STEP 1
-    char * grayscalePath = concatStr(argv[2], "_grayscale.pnm");
-    step1_convertRgb2Gray(argv[1], grayscalePath, blockSize, 1);
-
-    // STEP 2
-    step2_detectEdges(grayscalePath, concatStr(argv[2], "_x_edge.pnm"), blockSize, 1, "x");
-    step2_detectEdges(grayscalePath, blockSize, 2, "x");
-    step2_detectEdges(grayscalePath, blockSize, 3, "x");
-
-    step2_detectEdges(grayscalePath, concatStr(argv[2], "_y_edge.pnm"), blockSize, 1, "y");
-    step2_detectEdges(grayscalePath, blockSize, 2, "y");
-    step2_detectEdges(grayscalePath, blockSize, 3, "y");
-
-    // STEP 3
-    step3_calculateImportance(argv[2], blockSize, 1);
-
-    // Calculate the importance from the end
-
-    // Find & Erase seam
-
+    uint8_t * rgbPic;
+    // int width, height, filterWidth;
+    //float * x_sobel, * y_sobel;
+    //dim3 blockSize(32, 32);
     
+    char * grayscalePath = concatStr(argv[2], "_grayscale.pnm");
+    int newWidth = atoi(argv[3]);
+    
+    
+    step0_checkInput(argc, argv, rgbPic);
+    
+    
+    for (int ver = 0; ver <= 3; ver++) {
+        uint8_t * grayPixels = step1_convertRgb2Gray(argv[1], grayscalePath, ver);
+            
+        while (newWidth < width) {
+            uint8_t xEdge = step2_detectEdges(grayPixels, x_sobel, 0);
+            uint8_t yEdge = step2_detectEdges(grayPixels, y_sobel, 0);
+            
+            step3_calculateImportance(xEdge, yEdge, version);
+        }
+    }
+
+    free(rgbPic);
+    free(x_sobel);
+    free(y_sobel);
 }

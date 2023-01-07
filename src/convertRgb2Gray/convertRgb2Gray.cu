@@ -20,6 +20,7 @@
 void convertRgb2Gray(uint8_t * inPixels, int width, int height, uint8_t * outPixels, bool useDevice, dim3 blockSize) {
 	GpuTimer timer;//
 	timer.Start();//
+
 	if (useDevice == false)
     convertRgb2Gray_host(inPixels, width, height, outPixels);
 	
