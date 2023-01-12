@@ -3,59 +3,39 @@
 
 #include <stdio.h>
 #include <stdint.h>
-extern __constant__ float dc_filter[9];
+
+#define CHECK(call)\
+{\
+    const cudaError_t error = call;\
+    if (error != cudaSuccess)\
+    {\
+        fprintf(stderr, "Error: %s:%d, ", __FILE__, __LINE__);\
+        fprintf(stderr, "code: %d, reason: %s\n", error,\
+                cudaGetErrorString(error));\
+        exit(EXIT_FAILURE);\
+    }\
+}
+
 /**
  * Working with files
  * File types:
  * - .pnm file with "P2" or "P3" header
  * - filter (plain text)
  */
-void readPnm(char * fileName, int &width, int &height, uint8_t * &pixels);
-void writePnm(uint8_t * pixels, int width, int height, char * fileName);
-float *  readFilter(char * fileName, int &filterWidth);
-
+void readPnm(char * fileName, int &width, int &height, uchar3 * &pixels);
+void writePnm(uchar3 *pixels, int width, int height, int originalWidth, char *fileName);
 
 /**
  * convert RGB to Grayscale
  */
-void convertRgb2Gray(uint8_t * inPixels, int width, int height, uint8_t * outPixels, bool useDevice=false, dim3 blockSize=dim3(32,32));
-void convertRgb2Gray_host(uint8_t * inPixels, int width, int height, uint8_t * outPixels);
-__global__ void convertRgb2Gray_device(uint8_t * inPixels, int width, int height, uint8_t * outPixels);
-
-
-/**
- * Convolution
- */
-void convolution(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, 
-  uint8_t * outPixels, bool useDevice=false, dim3 blockSize=dim3(32,32), int kernelType=1);
-
-void detectEdges_host(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, uint8_t * outPixels);
-
-__global__ void detectEdges_kernel1(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, uint8_t * outPixels);
-__global__ void detectEdges_kernel2(uint8_t * inPixels, int width, int height, float * filter, int filterWidth, uint8_t * outPixels);
-__global__ void detectEdges_kernel3(uint8_t * inPixels, int width, int height, int filterWidth, uint8_t * outPixels);
-
-
-/**
- * Calculation the importance of pixels
- */
-void calImportance(uint8_t *in1, uint8_t *in2, int height, int width, uint8_t *out, bool useDevice=false, dim3 blockSize=dim3(32,32));
-void addMatrix_host(uint8_t * in1, uint8_t * in2, int height, int width, uint8_t * out);
-__global__ void addMatrix_kernel(uint8_t *in1, uint8_t *in2, int height, int width, uint8_t *out);
-
-
-void importanceToTheEnd(uint8_t * inPixels, int height, int width, uint8_t * outPixels, bool useDevice=false, dim3 blockSize=dim3(32,32));
-void importanceToTheEnd_host(uint8_t * inPixels, int width, int height, uint8_t * outPixels);
-//void importanceToTheEnd_device(uint8_t * inPixels, int width, int height, uint8_t * outPixels);
+void convertRgb2Gray_host(uchar3 * rgbPic, int width, int height, uint8_t * grayPic);
 
 /**
  * Another functions
  */
 void printDeviceInfo();
+void printError(char * msg, uchar3 * in1, uchar3 * in2, int width, int height);
 char * concatStr(const char * s1, const char * s2);
-float computeError(uint8_t * a1, uint8_t * a2, int n);
-void printError(char * msg, uint8_t * deviceResult, uint8_t * hostResult, int width, int height);
-
 
 /**
  * Time counter
@@ -75,7 +55,7 @@ struct GpuTimer {
     }
 
     void Start() {
-        cudaEventRecord(start, 0);
+        cudaEventRecord(start, 0);                                                                 
         cudaEventSynchronize(start);
     }
 
@@ -89,5 +69,10 @@ struct GpuTimer {
         cudaEventElapsedTime(&elapsed, start, stop);
         return elapsed;
     }
+
+    void printTime(char * s) {
+        printf("Processing time of %s: %f ms\n\n", s, Elapsed());
+    }
 };
+
 #endif
