@@ -30,14 +30,14 @@ There are 2 ways to use:
 
 # Screenshots
 
-| Before                                        | After                                               |
-| --------------------------------------------- | --------------------------------------------------- |
-| <img src="./screenshots/broadcast_tower.jpg"> | <img src="./screenshots/broadcast_tower_after.jpg"> |
-| <img src="./screenshots/clock.jpg">           | <img src="./screenshots/clock_after.jpg">           |
-| <img src="./screenshots/cat.jpg">             | <img src="./screenshots/cat_after.jpg">             |
-| <img src="./screenshots/elephant.jpg">        | <img src="./screenshots/elephant_after.jpg">        |
-| <img src="./screenshots/snail.jpg">           | <img src="./screenshots/snail_after.jpg">           |
-| <img src="./screenshots/lady.jpg">            | <img src="./screenshots/lady_after.jpg">            |
+| Before                                                     | After                                                            |
+| ---------------------------------------------------------- | ---------------------------------------------------------------- |
+| <img src="./screenshots/broadcast_tower.jpg" height="170"> | <img src="./screenshots/broadcast_tower_after.jpg" height="170"> |
+| <img src="./screenshots/clock.jpg" height="400">           | <img src="./screenshots/clock_after.jpg" height="400">           |
+| <img src="./screenshots/cat.jpg" height="200">             | <img src="./screenshots/cat_after.jpg" height="200">             |
+| <img src="./screenshots/elephant.jpg" height="300">        | <img src="./screenshots/elephant_after.jpg" height="300">        |
+| <img src="./screenshots/snail.jpg" height="200">           | <img src="./screenshots/snail_after.jpg" height="200">           |
+| <img src="./screenshots/lady.jpg" height="300">            | <img src="./screenshots/lady_after.jpg" height="300">            |
 
 # Have not achieved
 
