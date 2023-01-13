@@ -1,9 +1,12 @@
-# SEAM CARVING - IMAGE RESIZING WITH CUDA
+# Seam Carving - Image resizing with CUDA
 
 # Description
 
 - A final project in Parallel Programming Class (University of Science).
--
+- Using Nvidia GPU to optimize algorithm and reduce time in image processing. The main program was written in C and C++.
+- All details can be found in [colab](https://drive.google.com/file/d/1dcvAxTy_HCh1ey9BEAvTwMfo_a3yOU0x/view?usp=sharing "Google Colab") file.
+- Only 1 version was developed.
+- Note: This is a demonstration, not a real-world application.
 
 # Table of contents
 
@@ -18,7 +21,25 @@
 
 # How to use
 
+There are 2 ways to use:
+
+- Easy way: go to this [colab file](https://drive.google.com/file/d/1dcvAxTy_HCh1ey9BEAvTwMfo_a3yOU0x/view?usp=sharing "Google Colab"), that's all!
+- Hard way: Download **./seam-carving.ipynb** only, it is the same as colab file in easy way. Upload it to your drive and you are good to go.
+
 # Screenshots
+
+| Before                                        | After                                               |
+| --------------------------------------------- | --------------------------------------------------- |
+| <img src="./screenshots/broadcast_tower.jpg"> | <img src="./screenshots/broadcast_tower_after.jpg"> |
+| <img src="./screenshots/clock.jpg">           | <img src="./screenshots/clock_after.jpg">           |
+| <img src="./screenshots/cat.jpg">             | <img src="./screenshots/cat_after.jpg">             |
+| <img src="./screenshots/elephant.jpg">        | <img src="./screenshots/elephant_after.jpg">        |
+| <img src="./screenshots/snail.jpg">           | <img src="./screenshots/snail_after.jpg">           |
+| <img src="./screenshots/lady.jpg">            | <img src="./screenshots/lady_after.jpg">            |
+
+# Have not achieved
+
+Small errors when resizing large image, don't know where is the bug
 
 # Contributors
 
@@ -28,12 +49,12 @@
 
 # References
 
-<a href="https://drive.google.com/drive/folders/19_KM-2h6aa5OE8wDsM6kk5THcPHfKLjS">Slides from teacher Phạm Trọng Nghĩa</a>
+[Slides from teacher Phạm Trọng Nghĩa]("https://drive.google.com/drive/folders/19_KM-2h6aa5OE8wDsM6kk5THcPHfKLjS" "Drive")
 
-<a href="https://en.wikipedia.org/wiki/Seam_carving">Wikipedia - Seam Carving</a>
+[Wikipedia - Seam Carving]("https://en.wikipedia.org/wiki/Seam_carving" "wikipedia")
 
-<a href="https://www.youtube.com/watch?v=rpB6zQNsbQU">18.S191 MIT Fall 2020 - Seam Carving - Grant Sanderson</a>
+[18.S191 MIT Fall 2020 - Seam Carving - Grant Sanderson]("https://www.youtube.com/watch?v=rpB6zQNsbQU" "youtube")
 
-<a href="https://www.youtube.com/watch?v=ALcohd1q3dk">MIT 18.S191 Fall 2020 - Seam Carving - James Schloss</a>
+[MIT 18.S191 Fall 2020 - Seam Carving - James Schloss]("https://www.youtube.com/watch?v=ALcohd1q3dk" "youtube")
 
-<a href="https://www.youtube.com/watch?v=KuXjwB4LzSA">Convolution - 3Blue1Brown - Grant Sanderson</a>
+[Convolution - 3Blue1Brown - Grant Sanderson]("https://www.youtube.com/watch?v=KuXjwB4LzSA" "youtube")

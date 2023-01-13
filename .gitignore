@@ -1,5 +1,0 @@
-./src/exe/*
-./result/*
-
-!./src/device
-!./result 
