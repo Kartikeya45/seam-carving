@@ -1,5 +1,7 @@
 # Seam Carving - Image resizing with CUDA
 
+<img src="./screenshots/amal-unsplash.jpg">
+
 # Description
 
 - A final project in Parallel Programming Class (University of Science).
