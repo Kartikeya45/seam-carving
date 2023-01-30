@@ -4,11 +4,11 @@
 
 # Description
 
-- A final project in Parallel Programming Class (University of Science).
-- Using Nvidia GPU to optimize algorithm and reduce time in image processing. The main program was written in C and C++.
-- All details can be found in [colab](https://drive.google.com/file/d/1dcvAxTy_HCh1ey9BEAvTwMfo_a3yOU0x/view?usp=sharing "Google Colab") file.
-- Only 1 version was developed.
-- Note: This is a demonstration, not a real-world application.
+-   A final project in Parallel Programming Class (University of Science).
+-   Using Nvidia GPU to optimize algorithm and reduce time in image processing. The main program was written in C and C++.
+-   All details can be found in [colab](https://drive.google.com/file/d/1dcvAxTy_HCh1ey9BEAvTwMfo_a3yOU0x/view?usp=sharing "Google Colab") file.
+-   Only 1 version was developed.
+-   Note: This is a demonstration, not a real-world application.
 
 # Table of contents
 
@@ -21,12 +21,14 @@
 6. Remove low-energy seams
 7. Demonstration with images
 
-# How to use
+# Usage
+
+To view pnm images, install [IrfanView](https://www.irfanview.com/)
 
 There are 2 ways to use:
 
-- Easy way: go to this [colab file](https://drive.google.com/file/d/1dcvAxTy_HCh1ey9BEAvTwMfo_a3yOU0x/view?usp=sharing "Google Colab"), that's all!
-- Hard way: Download **./seam-carving.ipynb** only, it is the same as colab file in easy way. Upload it to your drive and you are good to go.
+-   Easy way: go to this [colab file](https://drive.google.com/file/d/1dcvAxTy_HCh1ey9BEAvTwMfo_a3yOU0x/view?usp=sharing "Google Colab"), that's all!
+-   Hard way: Download **./seam-carving.ipynb** only, it is the same as colab file in easy way. Upload it to your drive and you are good to go.
 
 # Screenshots
 
@@ -45,9 +47,9 @@ Small errors when resizing large image, don't know where is the bug
 
 # Contributors
 
-- Tran Tuan Kiet (Group leader)
-- Nguyen Duc Thang
-- Le Thanh Loc
+-   Tran Tuan Kiet (Group leader)
+-   Nguyen Duc Thang
+-   Le Thanh Loc
 
 # References
 
