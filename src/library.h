@@ -26,11 +26,6 @@ void readPnm(char * fileName, int &width, int &height, uchar3 * &pixels);
 void writePnm(uchar3 *pixels, int width, int height, int originalWidth, char *fileName);
 
 /**
- * convert RGB to Grayscale
- */
-void convertRgb2Gray_host(uchar3 * rgbPic, int width, int height, uint8_t * grayPic);
-
-/**
  * Another functions
  */
 void printDeviceInfo();
