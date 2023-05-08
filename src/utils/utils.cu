@@ -17,22 +17,6 @@ void printDeviceInfo() {
     printf("|________________________________|\n");
 }
 
-float computeError(uchar3 * a1, uchar3 * a2, int n) {
-    float err = 0;
-    for (int i = 0; i < n; i++) {
-        err += abs((int)a1[i].x - (int)a2[i].x);
-        err += abs((int)a1[i].y - (int)a2[i].y);
-        err += abs((int)a1[i].z - (int)a2[i].z);
-    }
-    err /= (n * 3);
-    return err;
-}
-
-void printError(char * msg, uchar3 * in1, uchar3 * in2, int width, int height) {
-	float err = computeError(in1, in2, width * height);
-	printf("%s: %f\n", msg, err);
-}
-
 char * concatStr(const char * s1, const char * s2) {
     char * result = (char *)malloc(strlen(s1) + strlen(s2) + 1);
     strcpy(result, s1);
