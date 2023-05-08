@@ -289,7 +289,7 @@ int main(int argc, char ** argv) {
     deviceResizing(rgbPic, width, height, desiredWidth, out_device, blockSize);
 
     // Compute error
-    printError((char * )"Error between device result and host result: ", out_host, out_device, width, height);
+    // printError((char * )"Error between device result and host result: ", out_host, out_device, width, height);
 
     // Write result to file, to pnm format
     writePnm(out_device, desiredWidth, height, width, concatStr(argv[2], "_device.pnm"));
