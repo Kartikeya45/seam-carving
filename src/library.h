@@ -29,7 +29,6 @@ void writePnm(uchar3 *pixels, int width, int height, int originalWidth, char *fi
  * Another functions
  */
 void printDeviceInfo();
-void printError(char * msg, uchar3 * in1, uchar3 * in2, int width, int height);
 char * concatStr(const char * s1, const char * s2);
 
 /**
