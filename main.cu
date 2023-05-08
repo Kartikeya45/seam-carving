@@ -291,12 +291,10 @@ int main(int argc, char ** argv) {
     // Compute error
     printError((char * )"Error between device result and host result: ", out_host, out_device, width, height);
 
-    // Write 2 results to files
-    writePnm(out_host, desiredWidth, height, width, concatStr(argv[2], "_host.pnm"));
+    // Write result to file, to pnm format
     writePnm(out_device, desiredWidth, height, width, concatStr(argv[2], "_device.pnm"));
 
     // Free memories
     free(rgbPic);
-    free(out_host);
     free(out_device);
 }
