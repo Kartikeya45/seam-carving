@@ -3,7 +3,7 @@
 #include "./src/library.h"
 
 using namespace std;
-
+//
 
 int WIDTH;
 __device__ int d_WIDTH;
