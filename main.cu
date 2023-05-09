@@ -14,14 +14,6 @@ __constant__ int d_xSobel[9] = {1, 0, -1, 2, 0, -2, 1, 0, -1};
 __constant__ int d_ySobel[9] = {1, 2, 1, 0, 0, 0, -1, -2, -1};
 const int filterWidth = 3;
 
-
-/**
- * @param argc[1] name of the input file (.pmn)
- * @param argc[2] name of output file with no extension, created by using host & device
- * @param argc[3] horizontal of image you want to resize 
- * @param argc[4] - optional - default(32): blocksize.x
- * @param argc[5] - optional - default(32): blocksize.y
- */
 void checkInput(int argc, char ** argv, int &width, int &height, uchar3 * &rgbPic, int &desiredWidth, dim3 &blockSize) {
     if (argc != 4 && argc != 6) {
         printf("The number of arguments is invalid\n");
@@ -50,7 +42,7 @@ void checkInput(int argc, char ** argv, int &width, int &height, uchar3 * &rgbPi
     } 
 
     // Check GPU is working or not
-    printDeviceInfo();
+    // printDeviceInfo();
 }
 
 
